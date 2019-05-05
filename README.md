@@ -1,2 +1,2 @@
 # JuneHerren.github.io
-## This is my own repo.
+## This repo is made for private projects
