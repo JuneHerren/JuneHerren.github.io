@@ -1,12 +1,12 @@
 一、背景
 
-众所周知，Android JNI层Crash问题是个比较头疼的问题。相对Java层来说，由于c/c++造成的crash没有输出如同
+众所周知，Android JNI层的Crash问题是个比较头疼的问题。相对Java层来说，由于c/c++造成的crash没有输出如同
 
-Java的Exception Strace，所以定位问题是个比较艰难的事情。Google Breakpad是一套完整的工具集，从crash的
+Java的Exception Strace，所以crash的定位问题是件比较艰难的事情。Google Breakpad是一套完整的工具集，从crash的
 
 捕获到crash的dump，都提供了相对应的工具。
 
-二、目的:当程序crash了之后，收集程序崩溃信息，定位崩溃的地方
+二、目的:当程序crash了之后，收集程序崩溃信息，定位到崩溃的地方
 
 三、方案
 
