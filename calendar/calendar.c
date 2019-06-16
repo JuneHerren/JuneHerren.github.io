@@ -67,80 +67,63 @@ int determineleapyear(int year)
 void calendar(int year, int daycode)
 {
 	 
-    int month, day,i, k;
-    
-    char row_rest[29] ;
-    char string[10];
-    int x;
-    int y;
+	int month, day,i, k;
+	char row_rest[29] ;
+	char string[10];
+	int x， y;
     
 	for ( month = 1; month <= 12; month++ )
 	{
-       lcd_clear_screen(BLACK);
-	    memset(row_rest, '\0',sizeof(row_rest));
-	    memset(string, '\0',sizeof(string));
-	    
-        x = 100;
-        y = 100;
-       // for(i=0;i<10;i++) {string[i]=' ';}
-        //printf("55566");
-        //for(k=0;k<29;k++) {row_rest[k]=' ';}
-	    printf("%s", months[month]);
+		lcd_clear_screen(BLACK);
+		memset(row_rest, '\0',sizeof(row_rest));
+		memset(string, '\0',sizeof(string));
 
-        //printf("first line");
-        lcd_show_string(x, y, months[month]); //显示第一行
-	
-        y = y + 20;
-	      //printf("second line");
-        lcd_show_string(x, y, "Sun  Mon  Tue  Wed  Thu  Fri  Sat");//显示第二行
-	
-        y = y + 20;
+		x = 100;
+		y = 100;
+
+		lcd_show_string(x, y, months[month]); //显示第一行
+		y += 20;
+		lcd_show_string(x, y, "Sun  Mon  Tue  Wed  Thu  Fri  Sat");//显示第二行
+
+		y += 20;
 		// Correct the position for the first date
 		for ( day = 1; day <= 1 + daycode * 5; day++ )
 		{
-			printf(" ");
-            strcat(row_rest, " ");
+		   //printf(" ");
+		   strcat(row_rest, " ");
 		}
-		
+
 		// Print all the dates for one month
 		for ( day = 1; day <= days_in_month[month]; day++ )
 		{
-			printf("%2d", day );
-		   //snprintf(string,10,"%d",day);
-		
-		  
-           snprintf(string, 10,"%2d",day);
-            //itoa(day, string, 10);
-           strcat(row_rest,string);
-            
-			// Is day before Sat? Else start next line Sun.
-			if ( ( day + daycode ) % 7 > 0 )
-            {
-                printf("   " );
-                strcat(row_rest, "   ");
-            }
-			else
-            {
-		        printf("datacode");
-             lcd_show_string(x, y, row_rest);
-		
-                //for(i=0;i<29;i++) {row_rest[i]=' ';}
-		        memset(row_rest, '\0',sizeof(row_rest));
-			 	   printf("\n " );
-              y = y + 20;
-                
-            }
-            
+		   //printf("%2d",day);
+		   snprintf(string, 10,"%2d",day);
+		   strcat(row_rest,string);
+
+		   // Is day before Sat? Else start next line Sun.
+		   if ( ( day + daycode ) % 7 > 0 )
+		   {
+		     //printf("   " );
+		     strcat(row_rest, "   ");
+		   }
+		   else
+		   {
+			//printf("datacode");
+			lcd_show_string(x, y, row_rest);
+			memset(row_rest, '\0',sizeof(row_rest));
+			// printf("\n " );
+			y += 20;
+
+		   }
+
 		}
-    	//printf("the rest");
-        lcd_show_string(x, y, row_rest);
-	
+		//printf("the rest");
+		lcd_show_string(x, y, row_rest);
+		// Set position for next month
+		daycode = ( daycode + days_in_month[month] ) % 7;
+		sleep(2);
         
-        // Set position for next month
-        daycode = ( daycode + days_in_month[month] ) % 7;
-        sleep(2);
-        
-    }
+    	}
 }
 
 /*
@@ -159,15 +142,12 @@ int main(int argc, char *argv[])
     
     
     int year, daycode, leapyear; //日历
-    
     int ret;
     
     year = inputyear();
-    //printf("wjc okkkkk");
     daycode = determinedaycode(year);
     determineleapyear(year);
     
-    /* “‘ø…∂¡ø…–¥∑Ω Ω¥Úø™LCD“∫æß«˝∂Ø */
     fd_fb = open("/dev/fb0", O_RDWR);
     if(fd_fb == -1)
     {
@@ -175,7 +155,6 @@ int main(int argc, char *argv[])
         return -1;
     }
     
-    /* ªÒ»°LCD“∫æßµƒø…±‰≤Œ ˝ */
     ret = ioctl(fd_fb, FBIOGET_VSCREENINFO, &var);
     if(ret == -1)
     {
@@ -183,7 +162,7 @@ int main(int argc, char *argv[])
         return -1;
     }
     
-    /* ªÒ»°LCD“∫æßµƒπÃ∂®≤Œ ˝ */
+    
     ret = ioctl(fd_fb, FBIOGET_FSCREENINFO, &fix);
     if(ret == -1)
     {
@@ -191,12 +170,10 @@ int main(int argc, char *argv[])
         return -1;
     }
     
-    /* ªÒ»°“∫æßœ‘¥Ê£¨√ø“ª––œ‘¥Ê£¨√ø“ª∏ˆœÒÀÿœ‘¥Êµƒ¥Û–° */
     screen_size = var.xres * var.yres * var.bits_per_pixel / 8;
     line_width  = var.xres * var.bits_per_pixel / 8;
     pixel_width = var.bits_per_pixel / 8;
     
-    /* Ω´“∫æßœ‘¥Ê”≥…‰µΩ”√ªßø’º‰ */
     fbmem = mmap(NULL, screen_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd_fb, 0);
     if(fbmem == (char *)-1)
     {
@@ -204,15 +181,13 @@ int main(int argc, char *argv[])
         return -1;
     }
     
-    /* “‘÷ª∂¡∑Ω Ω¥Úø™∫∫◊”ø‚HZK16’‚∏ˆŒƒº˛ */
     fd_hzk16 = open("HZK16", O_RDONLY);
     if(fd_hzk16 == -1)
     {
         printf("can't open HZK16!\n");
         return -1;
     }
-    
-    /* ªÒ»°HZk16’‚∏ˆ∫∫◊÷ø‚µƒŒƒº˛–≈œ¢ */
+  
     ret = fstat(fd_hzk16, &hzk16_stat);
     if(ret == -1)
     {
@@ -220,7 +195,6 @@ int main(int argc, char *argv[])
         return -1;
     }
     
-    /* Ω´∫∫◊”ø‚HZK16Œƒº˛÷–µƒƒ⁄»›”≥…‰µΩ”√ªßø’º‰ */
     hzk16mem = mmap(NULL, hzk16_stat.st_size, PROT_READ, MAP_SHARED, fd_hzk16, 0);
     if(hzk16mem == (char *)-1)
     {
@@ -228,24 +202,17 @@ int main(int argc, char *argv[])
         return -1;
     }
     
-    /* Ω´’˚∏ˆ“∫æß∆¡«Â∆¡Œ™∫⁄…´ */
     lcd_clear_screen(BLACK);
-    // printf("jhhjhhjh");
     
-    /* ‘⁄“∫æß∆¡…œΩ¯––÷–”¢Œƒµƒœ‘ æ≤Ÿ◊˜ */
     /*lcd_show_string(100, 100, "Hello world!");
     lcd_show_string(100, 120, "Welcome to Embedded world!");
     lcd_show_chinese(100, 140, "—ßœ∞«∂»Î Ωø™∑¢");
     lcd_show_str_chn(100, 160, "…Ú—Ù≈©“µ¥Û—ß, www.syau.edu.cn");
     */
     calendar(year, daycode);
-    // printf("jkjkji");
-    
-    /* Ω‚≥˝Œƒº˛‘⁄”√ªßø’º‰µƒ”≥…‰ */
     munmap(fbmem, screen_size);
     munmap(hzk16mem, hzk16_stat.st_size);
     
-    /* Õ®π˝Œƒº˛æ‰±˙πÿ±’¥Úø™µƒŒƒº˛ */
     close(fd_fb);
     close(fd_hzk16);
     
